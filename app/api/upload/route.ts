@@ -1,0 +1,3 @@
+import {handleUpload,type HandleUploadBody} from '@vercel/blob/client';
+export const runtime='nodejs';
+export async function POST(request:Request){try{const body=await request.json() as HandleUploadBody;const result=await handleUpload({request,body,onBeforeGenerateToken:async pathname=>{if(!/^videos\/[a-f0-9-]{36}$/.test(pathname))throw Error('נתיב סרטון לא תקין');return {allowedContentTypes:['video/mp4','video/webm','video/quicktime'],maximumSizeInBytes:30*1024*1024,addRandomSuffix:false,allowOverwrite:false,validUntil:Date.now()+15*60*1000}},onUploadCompleted:async()=>{}});return Response.json(result)}catch{return Response.json({error:'העלאת הסרטון נכשלה. נסו שוב.'},{status:400})}}
